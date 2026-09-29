@@ -1,0 +1,19 @@
+{
+  "name": "pwframework",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:reg": "playwright test tests/registration.spec.ts",
+    "test:login": "playwright test tests/login.spec.ts",
+    "report": "playwright show-report"
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "@types/node": "^26.2.0"
+  }
+}
