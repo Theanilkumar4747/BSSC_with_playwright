@@ -5,15 +5,22 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './tests',
-  fullyParallel: true,
+  fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  workers: 1,
   timeout: 60000,
-  reporter: [['html', { open: 'never' }], ['list']],
+  reporter: [
+    ['list'],
+    ['html', { outputFolder: 'playwright-report', open: 'never' }],
+    ['allure-playwright', {
+      resultsDir: 'allure-results',
+      detail: true,
+      suiteTitle: false,
+    }],
+  ],
   
   use: {
-    /* Explicitly enforce Headless Browser Execution */
     headless: false,
     /* Target application Base URL */
     baseURL: 'https://d37zxv8ae64sip.cloudfront.net/register',
@@ -21,7 +28,7 @@ export default defineConfig({
     /* Error inspection & debug artifacts */
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
-    video: 'retain-on-failure',
+    video: 'on',
     actionTimeout: 15000,
     navigationTimeout: 30000,
   },
@@ -42,4 +49,3 @@ export default defineConfig({
     // },
   ],
 });
-

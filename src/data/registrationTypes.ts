@@ -5,6 +5,7 @@
 export type YesNo = 'YES' | 'NO';
 export type Gender = 'MALE' | 'FEMALE' | 'TRANSGENDER';
 export type Category = 'UR' | 'EWS' | 'BC' | 'EBC' | 'SC' | 'ST';
+export type DisabilityNatureType = 'PERMANENT' | 'TEMPORARY';
 
 export interface DateOfBirth {
   day: string;
@@ -28,6 +29,7 @@ export interface CategoryDetails {
   categoryAuthority?: string;
   isPwD: YesNo;
   natureOfDisability?: string;
+  natureOfDisabilityType?: DisabilityNatureType;
   isMin40PercentPwD?: YesNo;
   disabilityCertNo?: string;
   disabilityIssueDate?: DateOfBirth;
@@ -49,7 +51,9 @@ export interface ServiceDetails {
   nameOfPost?: string;
   contractualFromDate?: DateOfBirth;
   contractualToDate?: DateOfBirth;
+  experienceCertificateFileName?: string;
   hasAgreement?: YesNo;
+  agreementCopyFileName?: string;
 }
 
 export interface ContactDetails {

@@ -42,32 +42,31 @@ export abstract class BasePage {
   async selectDropdownOption(selectLocator: Locator, valueOrLabel: string, fieldName = 'dropdown option'): Promise<void> {
     await this.action(`Select ${fieldName}`, async () => {
       await selectLocator.waitFor({ state: 'visible' });
-
-    // Wait for dropdown to have populated options if loaded via API
-    try {
-      await expect(async () => {
-        const count = await selectLocator.locator('option').count();
-        expect(count).toBeGreaterThan(1);
-      }).toPass({ timeout: 5000 });
-    } catch {
-      // Continue if it is already populated or static
-    }
+      await expect(selectLocator).toBeEnabled({ timeout: 15000 });
+      try {
+        await expect(async () => {
+          const count = await selectLocator.locator('option').count();
+          expect(count).toBeGreaterThan(1);
+        }).toPass({ timeout: 5000 });
+      } catch {
+        // Continue if it is already populated or static
+      }
 
       const options = await selectLocator.locator('option').all();
       for (const opt of options) {
-      const text = (await opt.textContent()) || '';
-      const val = (await opt.getAttribute('value')) || '';
-      if (
-        text.toLowerCase().includes(valueOrLabel.toLowerCase()) ||
-        val.toLowerCase() === valueOrLabel.toLowerCase() ||
-        val === valueOrLabel.replace(/^0+/, '')
-      ) {
+        const text = (await opt.textContent()) || '';
+        const val = (await opt.getAttribute('value')) || '';
+        if (
+          text.toLowerCase().includes(valueOrLabel.toLowerCase()) ||
+          val.toLowerCase() === valueOrLabel.toLowerCase() ||
+          val === valueOrLabel.replace(/^0+/, '')
+        ) {
           await selectLocator.selectOption(val || { label: text });
           return;
         }
       }
 
-      await selectLocator.selectOption(valueOrLabel).catch(() => {});
+      await selectLocator.selectOption(valueOrLabel);
     }, valueOrLabel);
   }
 

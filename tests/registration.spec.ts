@@ -1,5 +1,11 @@
 import { test, expect } from '../src/fixtures/testFixtures';
-import { TestDataGenerator } from '../src/data/mockData';
+import {
+  AGE_REFERENCE_DATE,
+  AGE_TEST_DATA,
+  AGE_VALIDATION_SCENARIOS,
+  AgeValidationService,
+  TestDataGenerator,
+} from '../src/data/mockData';
 
 test.describe('BSSC Candidate Registration Tests', () => {
 
@@ -44,7 +50,6 @@ test.describe('BSSC Candidate Registration Tests', () => {
 
     // Fill all form sections
     await registrationPage.fillRegistrationForm(candidateData);
-
     // Verify filled values
     await expect(registrationPage.applicantNameInput).toHaveValue(candidateData.personal.applicantName);
     await expect(registrationPage.mobileNumberInput).toHaveValue(candidateData.contact.mobileNo);
@@ -52,27 +57,19 @@ test.describe('BSSC Candidate Registration Tests', () => {
   });
 
   test('TC_REG_04: Should validate mobile number and confirm mobile number match', async ({ registrationPage }) => {
-    const candidate = TestDataGenerator.getValidURCandidate();
-    
-    // Fill mismatching mobile numbers
+    const candidate = TestDataGenerator.getCandidateWithMismatchedMobileNumbers();
     await registrationPage.fillPersonalDetails(candidate.personal);
     await registrationPage.fillCategoryDetails(candidate.category);
     await registrationPage.fillServiceDetails(candidate.service);
-    await registrationPage.fillContactDetails({
-      mobileNo: '9876543210',
-      confirmMobileNo: '9876500000', // Mismatched
-      emailId: candidate.contact.emailId,
-      confirmEmailId: candidate.contact.confirmEmailId,
-    });
-
+    await registrationPage.fillContactDetails(candidate.contact);
     await registrationPage.confirmMobileNumberInput.blur();
     await registrationPage.submitForm();
-
     // Check for mismatch or validation errors or disabled verification button
     const errors = await registrationPage.getValidationErrors();
     const isButtonDisabled = await registrationPage.submitButton.isDisabled();
     expect(errors.length > 0 || isButtonDisabled).toBeTruthy();
   });
+
 
   test('TC_REG_05: Should allow refreshing CAPTCHA image', async ({ registrationPage }) => {
     await expect(registrationPage.captchaInput).toBeVisible();
@@ -81,4 +78,22 @@ test.describe('BSSC Candidate Registration Tests', () => {
     await registrationPage.refreshCaptcha();
     await expect(registrationPage.captchaInput).toBeVisible();
   });
+
+});
+
+test.describe(`Age eligibility scenarios as of ${AGE_TEST_DATA.referenceDateLabel}`, () => {
+  for (const scenario of AGE_VALIDATION_SCENARIOS) {
+    test(`TC_REG_06: ${scenario.name}`, () => {
+      const result = AgeValidationService.validateAge({
+        dob: scenario.dob,
+        gender: scenario.gender,
+        category: scenario.category,
+        isPwD: scenario.isPwD,
+        isMin40PercentPwD: scenario.isMin40PercentPwD,
+        isExServiceman: scenario.isExServiceman,
+        referenceDate: AGE_REFERENCE_DATE,
+      });
+      expect(result.isValid, result.reason).toBe(scenario.expected);
+    });
+  }
 });
