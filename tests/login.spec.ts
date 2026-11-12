@@ -54,4 +54,5 @@ test.describe('BSSC Candidate Login & Portal Tests', () => {
     await loginPage.fillForgotRegistrationEmail(email);
     await expect(loginPage.forgotRegEmailTextBox).toHaveValue(email);
   });
+  
 });
